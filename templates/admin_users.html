@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-users">
+    <h2>Zarządzanie użytkownikami</h2>
+    
+    <div class="add-user-form">
+        <h3>Dodaj nowego użytkownika</h3>
+        <form method="POST" action="{{ url_for('admin_create_user') }}">
+            <div class="form-group">
+                <label for="username">Login:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Hasło:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Rola:</label>
+                <select id="role" name="role">
+                    <option value="user">Użytkownik</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Dodaj użytkownika</button>
+        </form>
+    </div>
+    
+    <div class="users-list">
+        <h3>Lista użytkowników</h3>
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Login</th>
+                    <th>Rola</th>
+                    <th>Data utworzenia</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        {% if user.role == 'admin' %}
+                        <span class="badge badge-admin">Admin</span>
+                        {% else %}
+                        <span class="badge badge-user">Użytkownik</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if user.id != current_user.id %}
+                        <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">Usuń</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">(Ty)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="back-link">
+        <a href="{{ url_for('dashboard') }}">← Wróć do panelu</a> |
+        <a href="{{ url_for('admin_settings') }}">Konfiguracja systemu</a>
+    </div>
+</div>
+{% endblock %}

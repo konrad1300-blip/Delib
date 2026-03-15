@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-settings">
+    <h2>Konfiguracja Systemu</h2>
+    
+    <form method="POST" action="{{ url_for('admin_update_settings') }}" class="settings-form">
+        <!-- Section 1: Entity Configuration -->
+        <div class="settings-section">
+            <h3>I. Konfiguracja Podmiotu</h3>
+            <p class="section-description">Ustal ogólne ramy prawne i organizacyjne.</p>
+            
+            <div class="form-group">
+                <label for="entity_name">Nazwa organizacji/jednostki:</label>
+                <input type="text" id="entity_name" name="entity_name" value="{{ settings.entity_name }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="entity_area">Obszar działania:</label>
+                <input type="text" id="entity_area" name="entity_area" value="{{ settings.entity_area or '' }}" placeholder="np. gmina, powiat, stowarzyszenie">
+            </div>
+            
+            <div class="form-group">
+                <label for="regulations">Regulamin i statut:</label>
+                <textarea id="regulations" name="regulations" rows="6" placeholder="Wprowadź tekst jednolity dokumentu regulującego zasady współpracy...">{{ settings.regulations or '' }}</textarea>
+            </div>
+        </div>
+        
+        <!-- Section 2: Process Parameters -->
+        <div class="settings-section">
+            <h3>II. Parametry Procesu</h3>
+            <p class="section-description">Ustaw czas trwania etapów i progi priorytetowe.</p>
+            
+            <div class="form-group">
+                <label for="discussion_duration_days">Czas trwania dyskusji (dni):</label>
+                <input type="number" id="discussion_duration_days" name="discussion_duration_days" value="{{ settings.discussion_duration_days }}" min="1" max="365">
+                <small>Ile czasu użytkownicy mają na zgłaszanie kwestii i debatę.</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="priority_threshold">Próg priorytetowy:</label>
+                <input type="number" id="priority_threshold" name="priority_threshold" value="{{ settings.priority_threshold }}" min="1">
+                <small>Liczba punktów, którą musi uzyskać temat, aby przejść do głosowania.</small>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label>
+                    <input type="checkbox" id="voting_enabled" name="voting_enabled" {% if settings.voting_enabled %}checked{% endif %}>
+                    Włącz głosowanie
+                </label>
+                <small>Umożliwia użytkownikom oddawanie głosów nad wypracowanymi projektami.</small>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Zapisz ustawienia</button>
+        </div>
+    </form>
+    
+    <!-- Section 3: Categories -->
+    <div class="settings-section">
+        <h3>III. Kategorie Kwestii</h3>
+        <p class="section-description">Twórz szablony dla różnych typów spraw.</p>
+        
+        <form method="POST" action="{{ url_for('admin_create_category') }}" class="category-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cat_name">Nazwa kategorii:</label>
+                    <input type="text" id="cat_name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="cat_color">Kolor:</label>
+                    <input type="color" id="cat_color" name="color" value="#007bff">
+                </div>
+                <div class="form-group">
+                    <label for="cat_description">Opis:</label>
+                    <input type="text" id="cat_description" name="description" placeholder="Opcjonalnie">
+                </div>
+                <button type="submit" class="btn btn-secondary">Dodaj</button>
+            </div>
+        </form>
+        
+        {% if categories %}
+        <table class="categories-table">
+            <thead>
+                <tr>
+                    <th>Kolor</th>
+                    <th>Nazwa</th>
+                    <th>Opis</th>
+                    <th>Liczba kwestii</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td><span class="color-badge" style="background-color: {{ category.color }}"></span></td>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.description or '-' }}</td>
+                    <td>{{ category.entries.count() }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin_delete_category', category_id=category.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Czy na pewno chcesz usunąć tę kategorię?')">Usuń</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-message">Brak zdefiniowanych kategorii.</p>
+        {% endif %}
+    </div>
+    
+    <div class="back-link">
+        <a href="{{ url_for('dashboard') }}">← Wróć do panelu</a> | 
+        <a href="{{ url_for('admin_users') }}">Zarządzanie użytkownikami</a>
+    </div>
+</div>
+{% endblock %}

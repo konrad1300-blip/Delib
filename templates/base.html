@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Delib - System Deliberacji{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        {% if current_user.is_authenticated %}
+        <nav class="navbar">
+            <div class="nav-brand">
+                <span class="brand-icon">◈</span>
+                <span class="brand-text">Delib</span>
+            </div>
+            <div class="nav-user">
+                <span class="user-info">
+                    <span class="username">{{ current_user.username }}</span>
+                    <span class="role-badge {{ current_user.role }}">{% if current_user.role == 'admin' %}Administrator{% else %}Użytkownik{% endif %}</span>
+                </span>
+                <a href="{{ url_for('logout') }}" class="btn btn-logout">Wyloguj</a>
+            </div>
+        </nav>
+        {% endif %}
+        
+        <main class="main-content {% if not current_user.is_authenticated %}centered{% endif %}">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </main>
+        
+        {% if current_user.is_authenticated %}
+        <footer class="footer">
+            <p>&copy; 2026 Delib - System Wspierania Decyzji</p>
+        </footer>
+        {% endif %}
+    </div>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

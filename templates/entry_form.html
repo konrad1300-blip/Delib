@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit_mode %}Edytuj wpis{% else %}Nowy wpis{% endif %} - Delib{% endblock %}
+
+{% block content %}
+<div class="entry-form-page">
+    <div class="form-card">
+        <h1>{% if edit_mode %}Edytuj wpis{% else %}Nowy wpis{% endif %}</h1>
+        
+        <form method="POST" action="{{ url_for('create_entry') if not edit_mode else url_for('edit_entry', entry_id=entry.id) }}" class="entry-form">
+            {% if edit_mode and entry.is_thread() %}
+            <div class="form-group">
+                <label for="title">Tytuł</label>
+                <input type="text" id="title" name="title" value="{{ entry.title }}" required>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="content">Treść</label>
+                <textarea id="content" name="content" rows="8" placeholder="Napisz treść..." required>{{ entry.content if edit_mode else '' }}</textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    {% if edit_mode %}Zapisz zmiany{% else %}Utwórz wpis{% endif %}
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Anuluj</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

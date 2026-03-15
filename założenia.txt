@@ -1,0 +1,8 @@
+Założenia programu.
+Potrzebyje aplikacji webowej do aministrowania bazą danych. 
+Bazę zanych będę budował puźniej narazie ma to być strona którą mogę umieścić na serwerze.
+która wymaga logowania na moziom administratora i użytkownika. Myślałem o wykożystaniu
+Flask i SQLAlchemy na początek może puźniej przejdziemy na profejsonalną bazę danych
+użytkownik po zalogowaniu i potwierdzeniu tożsamości może w bazie dokłądać własne wpisy
+wpisy będą segregowane na zasadzie rozraskającego sie drzewa.
+wpisy może być komentarzem do wątku wcześniej założonego lub samym wątkiem.
